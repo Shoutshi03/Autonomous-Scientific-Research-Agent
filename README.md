@@ -1,125 +1,74 @@
-# Scientific Research RAG Assistant (Hybrid Retrieval + Reranker + Streaming)
+# Scientific Research RAG Agent
 
-Un assistant intelligent basé sur **Retrieval-Augmented Generation (RAG)** permettant d’analyser des articles scientifiques PDF et de répondre à des questions complexes avec des réponses structurées, sourcées et en temps réel.
+A production-oriented Streamlit application for scientific PDF analysis. It combines hybrid retrieval (FAISS + BM25), optional reranking, and a grounded generation pipeline to answer research questions from a document corpus.
 
-## Fonctionnalités
+## Features
 
-### Gestion des documents
-
-- Upload de plusieurs fichiers PDF simultanément
-- Extraction automatique du texte
-- Chunking intelligent des
-
-title: Scientific RAG Research Agent
-emoji:
-colorFrom: blue
-colorTo: purple
-sdk: streamlit
-sdk_version: 1.35.0
-app_file: app.py
-python_version: 3.10
-pinned: false
-
-## Scientific RAG Research Agent
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![LangChain](https://img.shields.io/badge/LangChain-RAG-green)](https://www.langchain.com/)
-
-> **An advanced Retrieval-Augmented Generation (RAG) system designed for scientific document understanding, combining hybrid retrieval, neural reranking, and real-time streaming generation.**
-
-## Project Overview
-
-**Scientific-RAG-Agent** is an intelligent assistant specialized in analyzing **scientific articles (PDF)** and answering complex research questions with high precision.
-
-The system combines:
-
-- **Document understanding**
-- **Hybrid retrieval (semantic + lexical)**
-- **Neural reranking (Cross-Encoder)**
-- **Real-time LLM streaming**
-
-## Capabilities
-
-- Explain scientific papers
-- Extract methodologies and results
-- Summarize multiple documents
-- Answer complex research questions
-- Reduce hallucinations via grounded responses
+- Upload multiple PDF files
+- Extract text and chunk long scientific documents
+- Index documents in a FAISS vector store
+- Combine dense + lexical retrieval
+- Run grounded question answering with OpenRouter models
+- Stream responses in the UI in real time
+- Configure key parameters using environment variables
 
 ## Architecture
 
-The system follows a **Hybrid RAG pipeline** integrating FAISS, BM25, and a neural reranker.
+- `app.py`: Streamlit interface
+- `src/document_processor.py`: PDF ingestion and chunking
+- `src/vector_store.py`: FAISS persistence and retrieval setup
+- `src/retriever.py`: hybrid retrieval with BM25 + CrossEncoder reranking
+- `src/llm_interface.py`: LLM provider abstraction
+- `src/rag_chain.py`: RAG orchestration and prompt template
+- `src/config.py`: environment-based configuration management
 
-![Architecture RAG](mermaid-diagram.png)
+## Prerequisites
 
-### Système de recherche hybride
-
-- 🔹 **FAISS (dense retrieval)** pour similarité sémantique
-- 🔹 **BM25 (lexical retrieval)** pour matching mot-clé
-- 🔹 Fusion des résultats (hybrid retrieval)
-- 🔹 **Reranking avec Cross-Encoder (ms-marco)** pour améliorer la pertinence
-
-### Génération augmentée (RAG)
-
-- Réponses basées uniquement sur les documents fournis
-- Réduction des hallucinations
-- Réponses structurées et académiques
-
-### Streaming en temps réel
-
-- Génération token par token
-- Affichage progressif de la réponse dans Streamlit
-
-### Interface utilisateur
-
-- Interface Streamlit simple et interactive
-- Historique de conversation
-- Visualisation des sources utilisées
-
-## Architecture du système
-
-### Schéma global (RAG Pipeline)
-
-> Insère ici ton diagramme d’architecture
+- Python 3.10+
+- pip
+- A valid OpenRouter API key
 
 ## Installation
 
-### 🔹 Prérequis
-
-- Python 3.10+
-- pip (gestionnaire de paquets Python)
-- Git installé
-
----
-
-### 🔹 1. Cloner le dépôt
-
 ```bash
-git clone https://github.com/your-username/Autonomous-Scientific-Research-Agent.git
+git clone https://github.com/Shoutshi03/Autonomous-Scientific-Research-Agent.git
 cd Autonomous-Scientific-Research-Agent
-
-
-### Creer un environnement virtuel : 
-```bash
-python -m venv venv
-venv\Scripts\activate
-
-### installer les dependances : 
-```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
+## Configuration
 
-## Configurer les variables d’environnement
-
-Créer un fichier .env à la racine du projet :
+Copy `.env.example` to `.env` and fill in the required values.
 
 ```bash
+copy .env.example .env
+```
+
+Example:
+
+```env
 OPENROUTER_API_KEY=your_api_key_here
+LLM_MODEL=deepseek/deepseek-chat
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+MAX_RETRIEVED_DOCS=5
+```
 
-##  lancement du serveur :
+## Run locally
 
-```bash 
+```bash
+streamlit run app.py
+```
 
-streamlit run app.py 
+## Production notes
+
+- Keep API keys in environment variables or your deployment secret manager
+- Store the FAISS index in a persistent volume if deployed in a container
+- Validate uploaded files server-side before indexing
+- Monitor model token usage and retrieval quality in production
